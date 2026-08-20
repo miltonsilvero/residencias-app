@@ -18,7 +18,7 @@ export function Header({ session }: { session: SessionAccount }) {
       <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
-            Casa al día
+            Casas de Irene
           </p>
           <Link
             href={session.role === "admin" ? "/admin" : "/dashboard"}
@@ -30,10 +30,10 @@ export function Header({ session }: { session: SessionAccount }) {
         <div className="flex items-center gap-4">
           {session.role === "house" && (
             <Link
-              href="/dashboard/historial"
+              href="/dashboard"
               className="text-sm text-[var(--color-ink-soft)] hover:text-[var(--color-accent)]"
             >
-              Historial
+              Panel
             </Link>
           )}
           <button

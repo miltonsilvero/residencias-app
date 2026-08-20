@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { PeriodMember } from "@/lib/types";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, fractionToWeeks, weeksToFraction } from "@/lib/format";
+
+const WEEK_OPTIONS = [
+  { weeks: 1, label: "1 semana" },
+  { weeks: 2, label: "2 semanas" },
+  { weeks: 3, label: "3 semanas" },
+  { weeks: 4, label: "Mes completo" },
+];
 
 export function MemberRow({
   member,
@@ -15,16 +22,14 @@ export function MemberRow({
   onChanged: () => void;
 }) {
   const [editingOverride, setEditingOverride] = useState(false);
-  const [fraction, setFraction] = useState(String(member.fraction));
 
   async function updateField(fields: Partial<PeriodMember>) {
     await supabase.from("period_members").update(fields).eq("id", member.id);
     onChanged();
   }
 
-  async function saveFraction() {
-    const value = Math.max(0, Math.min(1, Number(fraction) || 0));
-    await updateField({ fraction: value });
+  async function setWeeks(weeks: number) {
+    await updateField({ fraction: weeksToFraction(weeks) });
   }
 
   async function togglePaid() {
@@ -39,6 +44,8 @@ export function MemberRow({
     await supabase.from("period_members").delete().eq("id", member.id);
     onChanged();
   }
+
+  const currentWeeks = fractionToWeeks(member.fraction);
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-paper)] px-4 py-3">
@@ -57,17 +64,18 @@ export function MemberRow({
       </span>
 
       <label className="flex items-center gap-1 text-xs text-[var(--color-ink-soft)]">
-        parte del mes
-        <input
-          type="number"
-          min="0"
-          max="1"
-          step="0.05"
-          value={fraction}
-          onChange={(e) => setFraction(e.target.value)}
-          onBlur={saveFraction}
-          className="w-16 rounded border border-[var(--color-line)] px-1 py-0.5 text-center"
-        />
+        semanas del mes
+        <select
+          value={currentWeeks}
+          onChange={(e) => setWeeks(Number(e.target.value))}
+          className="rounded border border-[var(--color-line)] px-2 py-1 text-[var(--color-ink)]"
+        >
+          {WEEK_OPTIONS.map((opt) => (
+            <option key={opt.weeks} value={opt.weeks}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
       </label>
 
       <div className="ml-auto flex items-center gap-2">

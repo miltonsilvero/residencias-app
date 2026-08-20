@@ -127,15 +127,15 @@ export function PeriodView({
         </form>
         <p className="mt-2 text-xs text-[var(--color-ink-soft)]">
           Si alguien vivió solo una parte del mes, cargalo y después ajustá
-          &quot;parte del mes&quot; (ej. 0.5 para medio mes) en su fila.
+          las &quot;semanas del mes&quot; en su fila (1 a 4).
         </p>
       </section>
 
       {showBillForm && (
         <BillFormModal
-          periodId={period.id}
           houseId={houseId}
           createdBy={houseId}
+          defaultMonthKey={monthKey}
           onClose={() => setShowBillForm(false)}
           onCreated={refresh}
         />

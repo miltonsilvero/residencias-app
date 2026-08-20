@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import "@fontsource/montserrat/400.css";
+import "@fontsource/montserrat/500.css";
+import "@fontsource/montserrat/600.css";
+import "@fontsource/montserrat/700.css";
+import "@fontsource/montserrat/800.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Casa al día — gestión de servicios",
+  title: "Casas de Irene — gestión de servicios",
   description: "Gestión de facturas y gastos compartidos de la residencia",
 };
 
