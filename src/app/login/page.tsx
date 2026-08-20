@@ -52,7 +52,7 @@ export default function LoginPage() {
             Residencias
           </p>
           <h1 className="font-display text-3xl font-semibold text-[var(--color-ink)]">
-            Casa al día
+            Casas de Irene
           </h1>
         </div>
 
