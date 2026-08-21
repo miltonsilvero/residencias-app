@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { clearSession } from "@/lib/session";
 import { SessionAccount } from "@/lib/types";
+import { homeForRole } from "@/components/Guard";
 
 export function Header({ session }: { session: SessionAccount }) {
   const router = useRouter();
@@ -18,10 +19,10 @@ export function Header({ session }: { session: SessionAccount }) {
       <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-ink-soft)]">
-            Casas de Irene
+            Casas de América del Sur
           </p>
           <Link
-            href={session.role === "admin" ? "/admin" : "/dashboard"}
+            href={homeForRole(session.role)}
             className="font-display text-xl font-semibold text-[var(--color-ink)]"
           >
             {session.display_name}

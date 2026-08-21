@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { saveSession } from "@/lib/session";
+import { homeForRole } from "@/components/Guard";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,7 +27,10 @@ export default function LoginPage() {
     setLoading(false);
 
     if (dbError) {
-      setError("No se pudo conectar con la base de datos.");
+      console.error("Error de Supabase al hacer login:", dbError);
+      setError(
+        `No se pudo conectar con la base de datos (${dbError.message}).`
+      );
       return;
     }
     if (!data || data.password !== password) {
@@ -41,7 +45,7 @@ export default function LoginPage() {
       display_name: data.display_name,
     });
 
-    router.replace(data.role === "admin" ? "/admin" : "/dashboard");
+    router.replace(homeForRole(data.role));
   }
 
   return (
@@ -52,7 +56,7 @@ export default function LoginPage() {
             Residencias
           </p>
           <h1 className="font-display text-3xl font-semibold text-[var(--color-ink)]">
-            Casas de Irene
+            Casas de América del Sur
           </h1>
         </div>
 

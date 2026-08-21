@@ -16,7 +16,7 @@ create table if not exists accounts (
   id uuid primary key default gen_random_uuid(),
   username text unique not null,
   password text not null,
-  role text not null check (role in ('admin', 'house')),
+  role text not null check (role in ('admin', 'house', 'supervisor')),
   display_name text not null,
   created_at timestamptz not null default now()
 );
@@ -97,7 +97,8 @@ create policy "bills_all" on bills for all using (true) with check (true);
 insert into accounts (username, password, role, display_name) values
   ('rayuela', 'dorrego3362', 'house', 'Rayuela'),
   ('macondo', 'dorrego3262', 'house', 'Macondo'),
-  ('admin', 'admin3011', 'admin', 'Administración')
+  ('admin', 'admin3011', 'admin', 'Administración'),
+  ('irene', 'toscana2026', 'supervisor', 'Irene')
 on conflict (username) do nothing;
 
 -- =========================================================

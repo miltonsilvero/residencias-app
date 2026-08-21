@@ -7,7 +7,7 @@ import "@fontsource/montserrat/800.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Casas de Irene — gestión de servicios",
+  title: "Casas de América del Sur — gestión de servicios",
   description: "Gestión de facturas y gastos compartidos de la residencia",
 };
 

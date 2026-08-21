@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { homeForRole } from "@/components/Guard";
 
 export default function Home() {
   const router = useRouter();
@@ -11,10 +12,8 @@ export default function Home() {
     const session = getSession();
     if (!session) {
       router.replace("/login");
-    } else if (session.role === "admin") {
-      router.replace("/admin");
     } else {
-      router.replace("/dashboard");
+      router.replace(homeForRole(session.role));
     }
   }, [router]);
 
