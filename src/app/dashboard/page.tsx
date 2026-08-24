@@ -7,10 +7,9 @@ import { Header } from "@/components/Header";
 import { BillFormModal } from "@/components/BillFormModal";
 import { MembersDebtPanel } from "@/components/MembersDebtPanel";
 import { supabase } from "@/lib/supabaseClient";
-import { usePeriodData } from "@/lib/usePeriodData";
+import { useHouseOverview } from "@/lib/useHouseOverview";
 import { Period } from "@/lib/types";
 import { currentMonthKey, formatMoney, monthLabel, monthNameOnly } from "@/lib/format";
-import { fundBalance, totalBillsAmount } from "@/lib/shares";
 
 export default function DashboardPage() {
   const session = useGuard("house");
@@ -22,7 +21,7 @@ export default function DashboardPage() {
   const [selectedMonthKey, setSelectedMonthKey] = useState("");
 
   const thisMonth = currentMonthKey();
-  const current = usePeriodData(session?.id, thisMonth);
+  const overview = useHouseOverview(session?.id);
 
   async function loadPeriods() {
     if (!session) return;
@@ -43,18 +42,6 @@ export default function DashboardPage() {
   }, [session]);
 
   if (!session) return null;
-
-  const pendingBills = current.bills.filter((b) => !b.paid);
-  const pendingMembers = current.members.filter((m) => !m.paid);
-  const balance = current.period
-    ? fundBalance(
-        current.members,
-        current.bills,
-        current.period.funding_mode,
-        current.period.fixed_amount
-      )
-    : 0;
-  const billsTotal = totalBillsAmount(current.bills);
 
   function goToMonth(monthKey: string) {
     router.push(`/dashboard/mes/${monthKey.slice(0, 7)}`);
@@ -97,47 +84,38 @@ export default function DashboardPage() {
         </section>
 
         <section className="grid gap-4 sm:grid-cols-3">
-          <button
-            onClick={() => goToMonth(thisMonth)}
-            className="rounded-2xl bg-[var(--color-paper)] p-5 text-left ring-1 ring-[var(--color-line)] hover:ring-[var(--color-accent)]"
-          >
+          <div className="rounded-2xl bg-[var(--color-paper)] p-5 ring-1 ring-[var(--color-line)]">
             <p className="text-xs uppercase tracking-wide text-[var(--color-ink-soft)]">
-              Fondo común · {monthLabel(thisMonth)}
+              Fondo común · histórico
             </p>
             <p className="tabular font-display mt-1 text-2xl font-semibold text-[var(--color-ink)]">
-              {current.loading ? "..." : formatMoney(balance)}
+              {overview.loading ? "..." : formatMoney(overview.balance)}
             </p>
-          </button>
+          </div>
 
-          <button
-            onClick={() => goToMonth(thisMonth)}
-            className="rounded-2xl bg-[var(--color-paper)] p-5 text-left ring-1 ring-[var(--color-line)] hover:ring-[var(--color-accent)]"
-          >
+          <div className="rounded-2xl bg-[var(--color-paper)] p-5 ring-1 ring-[var(--color-line)]">
             <p className="text-xs uppercase tracking-wide text-[var(--color-ink-soft)]">
               Facturas sin pagar
             </p>
             <p className="font-display mt-1 text-2xl font-semibold text-[var(--color-ink)]">
-              {current.loading ? "..." : pendingBills.length}
+              {overview.loading ? "..." : overview.pendingBillsCount}
             </p>
             <p className="text-xs text-[var(--color-ink-soft)]">
-              de {formatMoney(billsTotal)} facturados este mes
+              por {formatMoney(overview.pendingBillsAmount)} en total
             </p>
-          </button>
+          </div>
 
-          <button
-            onClick={() => goToMonth(thisMonth)}
-            className="rounded-2xl bg-[var(--color-paper)] p-5 text-left ring-1 ring-[var(--color-line)] hover:ring-[var(--color-accent)]"
-          >
+          <div className="rounded-2xl bg-[var(--color-paper)] p-5 ring-1 ring-[var(--color-line)]">
             <p className="text-xs uppercase tracking-wide text-[var(--color-ink-soft)]">
               Faltan aportar
             </p>
             <p className="font-display mt-1 text-2xl font-semibold text-[var(--color-ink)]">
-              {current.loading ? "..." : pendingMembers.length}
+              {overview.loading ? "..." : overview.pendingMembersCount}
             </p>
             <p className="text-xs text-[var(--color-ink-soft)]">
-              de {current.members.length} integrantes
+              de {overview.membersCount} aportes registrados
             </p>
-          </button>
+          </div>
         </section>
 
         <MembersDebtPanel houseId={session.id} />
@@ -230,7 +208,7 @@ export default function DashboardPage() {
             defaultMonthKey={thisMonth}
             onClose={() => setShowBillForm(false)}
             onCreated={() => {
-              current.refresh();
+              overview.refresh();
               loadPeriods();
             }}
           />
